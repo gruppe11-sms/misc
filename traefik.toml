@@ -1,0 +1,42 @@
+defaultEntryPoints = ["http"]
+
+[entryPoints]
+  [entryPoints.http]
+  address = ":8462"
+
+[web]
+address = ":8080"
+
+[file]
+
+[backends]
+  [backends.auditsystem]
+    [backends.auditsystem.servers.server1]
+    url = "http://localhost:8085"
+    weight = 10
+
+  [backends.rolesystem]
+    [backends.rolesystem.servers.server1]
+    url = "http://localhost:8084"
+    weight = 1
+
+  [backends.frontend]
+    [backends.frontend.servers.server1]
+    url = "http://localhost:4200"
+    weight = 1
+
+[frontends]
+  [frontends.frontend]
+  backend = "frontend"
+    [frontends.frontend.routes.frontend]
+    rule = "PathPrefix:/"
+
+  [frontends.auditsystem]
+  backend = "auditsystem"
+    [frontends.auditsystem.routes.api]
+    rule = "Path:/api/auditentry"
+
+  [frontends.rolesystem]
+  backend = "rolesystem"
+    [frontends.rolesystem.routes.user_api]
+    rule = "Path:/api/users"
