@@ -26,17 +26,22 @@ address = ":8080"
     weight = 1
 
 [frontends]
-  [frontends.frontend]
-  backend = "frontend"
-    [frontends.frontend.routes.frontend]
-    rule = "PathPrefix:/"
+  [frontends.rolesystem_users]
+  backend = "rolesystem"
+    [frontends.rolesystem_users.routes.user_api]
+    rule = "Path:/api/users"
+  [frontends.rolesystem_auth]
+  backend = "rolesystem"
+    [frontends.rolesystem_auth.routes.auth_api]
+    rule = "PathPrefixStrip:/api/auth"
 
   [frontends.auditsystem]
   backend = "auditsystem"
     [frontends.auditsystem.routes.api]
     rule = "Path:/api/auditentry"
 
-  [frontends.rolesystem]
-  backend = "rolesystem"
-    [frontends.rolesystem.routes.user_api]
-    rule = "Path:/api/users"
+  [frontends.frontend]
+  backend = "frontend"
+    [frontends.frontend.routes.frontend]
+    rule = "PathPrefix:/"
+
