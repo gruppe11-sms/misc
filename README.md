@@ -11,7 +11,9 @@ Misc stuff needed for the project, that are not system specific
 3. Navigate into the cloned repository
 4. Start traefik: `path/to/traefik/executeable -c traefik.toml`
 
-Traefik should now be running, you can check by opening <http://localhost:8080> in you webbrowser
+Traefik should now be running, you can check by opening <http://localhost:8080> in you webbrowser. 
+
+Any services configured in Traefik should be available on <http://localhost:8462>. This includes both api endpoints, and the actual frontend app if it's running. 
 
 ### Configure the backends
 The current Traefik configuration expects the following:
