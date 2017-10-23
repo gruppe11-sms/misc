@@ -72,3 +72,12 @@ So a pure configuration for the entire wiki system would look, like this:
     [frontends.wiki.routes.wiki_api]
     rule = "Path:/api/wiki"
 ```
+
+## Security
+Add the security folder to the project
+Add the following to build.gradle `dependencies`:
+
+```groovy
+compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.8.0'
+compile('org.springframework.boot:spring-boot-starter-security')
+```
