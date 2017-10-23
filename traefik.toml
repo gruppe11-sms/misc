@@ -29,7 +29,18 @@ address = ":8080"
   [frontends.rolesystem_users]
   backend = "rolesystem"
     [frontends.rolesystem_users.routes.user_api]
-    rule = "Path:/api/users"
+    rule = "PathPrefix:/api/users"
+
+  [frontends.rolesystem_roles]
+  backend = "rolesystem"
+    [frontends.rolesystem_roles.routes.role_api]
+    rule = "PathPrefix:/api/roles"
+
+  [frontends.rolesystem_groups]
+  backend = "rolesystem"
+    [frontends.rolesystem_groups.routes.group_api]
+    rule = "PathPrefix:/api/groups"
+
   [frontends.rolesystem_auth]
   backend = "rolesystem"
     [frontends.rolesystem_auth.routes.auth_api]
