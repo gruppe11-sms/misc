@@ -1,4 +1,4 @@
-package dk.group11.auditsystem.security
+package dk.group11.coursesystem.security
 
 import org.springframework.context.annotation.Bean
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder

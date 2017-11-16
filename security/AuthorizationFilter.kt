@@ -1,8 +1,7 @@
-package dk.group11.auditsystem.security
+package dk.group11.coursesystem.security
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.github.kittinunf.fuel.core.ResponseDeserializable
 import io.jsonwebtoken.Jwts
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
