@@ -1,0 +1,49 @@
+version: '3.3'
+services:
+  database:
+    image: postgres:9.6-alpine
+    container_name: database
+    environment:
+      - POSTGRES_PASSWORD=postgres
+
+  rolesystem:
+    image: rolesystem
+    container_name: rolesystem
+    links:
+      - database
+    labels:
+      - "traefik.frontend.rule=PathPrefix:/api/users,PathPrefix:/api/roles,PathPrefix:/api/groups,PathPrefixStrip:/api/auth"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+
+  auditsystem:
+    image: auditsystem
+    container_name: auditsystem
+    links:
+      - database
+      - rolesystem
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - AUDIT_ROLESYSTEMURL=http://rolesystem:8080
+    labels:
+      - "traefik.frontend.rule=PathPrefix:/api/auditentry"
+
+  frontend:
+    image: frontend
+    container_name: frontend
+    labels:
+      - "traefik.frontend.rule=PathPrefix:/"
+
+  traefik:
+    image: traefik
+    container_name: traefik
+    ports:
+      - 8080:8080
+      - 8081:80
+    volumes:
+      - ./dockertraefik.toml:/etc/traefik/traefik.toml
+      - /var/run/docker.sock:/var/run/docker.sock

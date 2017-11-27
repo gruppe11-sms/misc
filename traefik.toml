@@ -35,8 +35,6 @@ address = ":8080"
     [backends.frontend.servers.server1]
     url = "http://localhost:4200"
     weight = 1
-	
-
 
 [frontends]
 
@@ -79,4 +77,3 @@ address = ":8080"
   backend = "frontend"
     [frontends.frontend.routes.frontend]
     rule = "PathPrefix:/"
-

@@ -1,0 +1,6 @@
+[web]
+address = ':8080'
+
+[docker]
+watch = true
+
