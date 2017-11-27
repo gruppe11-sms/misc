@@ -10,9 +10,20 @@ address = ":8080"
 [file]
 
 [backends]
+
+  [backends.coursesystem]
+    [backends.coursesystem.servers.server1]
+    url = "http://localhost:8089"
+    weight = 1
+	
+  [backends.calendarsystem]
+    [backends.calendarsystem.servers.server1]
+    url = "http://localhost:8087"
+    weight = 1
+
   [backends.auditsystem]
     [backends.auditsystem.servers.server1]
-    url = "http://localhost:8085"
+    url = "http://localhost:8086"
     weight = 10
 
   [backends.rolesystem]
@@ -24,12 +35,31 @@ address = ":8080"
     [backends.frontend.servers.server1]
     url = "http://localhost:4200"
     weight = 1
+	
+
 
 [frontends]
+
+  [frontends.coursesystem]
+    backend = "coursesystem"
+    [frontends.coursesystem.routes.courses_api]
+    rule = "PathPrefix:/api/courses"
+
   [frontends.rolesystem_users]
   backend = "rolesystem"
     [frontends.rolesystem_users.routes.user_api]
-    rule = "Path:/api/users"
+    rule = "PathPrefix:/api/users"
+
+  [frontends.rolesystem_roles]
+  backend = "rolesystem"
+    [frontends.rolesystem_roles.routes.role_api]
+    rule = "PathPrefix:/api/roles"
+
+  [frontends.rolesystem_groups]
+  backend = "rolesystem"
+    [frontends.rolesystem_groups.routes.group_api]
+    rule = "PathPrefix:/api/groups"
+
   [frontends.rolesystem_auth]
   backend = "rolesystem"
     [frontends.rolesystem_auth.routes.auth_api]
@@ -38,8 +68,13 @@ address = ":8080"
   [frontends.auditsystem]
   backend = "auditsystem"
     [frontends.auditsystem.routes.api]
-    rule = "Path:/api/auditentry"
+    rule = "PathPrefix:/api/auditentry"
 
+  [frontends.calendarsystem]
+  backend = "calendarsystem"
+    [frontends.calendarsystem.routes.api]
+    rule = "PathPrefix:/api/activities"
+  
   [frontends.frontend]
   backend = "frontend"
     [frontends.frontend.routes.frontend]
