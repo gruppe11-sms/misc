@@ -15,10 +15,10 @@ services:
       - database
     deploy:
       labels:
-        - "traefik.frontend.rule=PathPrefix:/api/users,/api/roles,api/groups"
+        - "traefik.frontend.rule=PathPrefix:/api/users,/api/roles,api/groups,api/tokens"
         - "traefik.port=8084"
     labels:
-      - "traefik.frontend.rule=PathPrefix:/api/users,/api/roles,api/groups"
+      - "traefik.frontend.rule=PathPrefix:/api/users,/api/roles,api/groups,api/tokens"
       - "traefik.port=8084"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
@@ -100,7 +100,7 @@ services:
       - AUDIT_URL=http://auditsystem:8086
     deploy:
       labels:
-        - "traefik.frontend.rule=PathPrefix:/api/activities"
+        - "traefik.frontend.rule=PathPrefix:/api/activities,api/exports"
         - "traefik.port=8087"
     secrets:
       - system_password

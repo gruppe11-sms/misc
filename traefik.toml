@@ -63,6 +63,12 @@ address = ":8080"
     [frontends.rolesystem_auth.routes.auth_api]
     rule = "PathPrefixStrip:/api/auth"
 
+  [frontends.rolesystem_exports]
+  backend = "rolesystem"
+    [frontends.rolesystem_exports.routes.tokens_api]
+    rule = "PathPrefix:/api/tokens"
+
+
   [frontends.auditsystem]
   backend = "auditsystem"
     [frontends.auditsystem.routes.api]
@@ -72,6 +78,11 @@ address = ":8080"
   backend = "calendarsystem"
     [frontends.calendarsystem.routes.api]
     rule = "PathPrefix:/api/activities"
+ 
+  [frontends.calendarsystem_exports]
+  backend = "calendarsystem"
+    [frontends.calendarsystem_exports.routes.export_api]
+    rule = "PathPrefix:/api/exports"
   
   [frontends.frontend]
   backend = "frontend"
