@@ -2,48 +2,137 @@ version: '3.3'
 services:
   database:
     image: postgres:9.6-alpine
-    container_name: database
     environment:
       - POSTGRES_PASSWORD=postgres
+    labels:
+      - "traefik.enable=false"
+#    volumes:
+#      - db-data:/var/lib/postgresql/data/pgdata
 
   rolesystem:
-    image: rolesystem
-    container_name: rolesystem
-    links:
+    image: sdugroup11/rolesystem
+    depends_on:
       - database
+    deploy:
+      labels:
+        - "traefik.frontend.rule=PathPrefix:/api/users,/api/roles,api/groups"
+        - "traefik.port=8084"
     labels:
-      - "traefik.frontend.rule=PathPrefix:/api/users,PathPrefix:/api/roles,PathPrefix:/api/groups,PathPrefixStrip:/api/auth"
+      - "traefik.frontend.rule=PathPrefix:/api/users,/api/roles,api/groups"
+      - "traefik.port=8084"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
+    secrets:
+      - system_password
+      - signing_key
+
+
+  authsystem:
+    image: sdugroup11/rolesystem
+    depends_on:
+      - database
+    deploy:
+      labels:
+        - "traefik.frontend.rule=PathPrefixStrip:/api/auth"
+        - "traefik.port=8084"
+    labels:
+      - "traefik.frontend.rule=PathPrefixStrip:/api/auth"
+      - "traefik.port=8084"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+    secrets:
+      - system_password
+      - signing_key
 
   auditsystem:
-    image: auditsystem
-    container_name: auditsystem
-    links:
+    image: sdugroup11/auditsystem
+    depends_on:
       - database
-      - rolesystem
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=postgres
-      - AUDIT_ROLESYSTEMURL=http://rolesystem:8080
-    labels:
-      - "traefik.frontend.rule=PathPrefix:/api/auditentry"
+      - ROLE_URL=http://rolesystem:8084
+      - ROLE_USERNAME=system
+      - AUDIT_URL=http://auditsystem:8086
+    deploy:
+      labels:
+        - "traefik.frontend.rule=PathPrefix:/api/auditentry"
+        - "traefik.port=8086"
+    secrets:
+      - system_password
+      - signing_key
+
+  coursesystem:
+    image: sdugroup11/coursesystem
+    depends_on:
+      - database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - ROLE_URL=http://rolesystem:8084
+      - ROLE_USERNAME=system
+      - AUDIT_URL=http://auditsystem:8086
+      - CALENDER_URL=http://calendersystem:8087
+    deploy:
+      labels:
+        - "traefik.frontend.rule=PathPrefix:/api/courses"
+        - "traefik.port=8089"
+    secrets:
+      - system_password
+      - signing_key
+
+  calendersystem:
+    image: sdugroup11/calendersystem
+    depends_on:
+      - database
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://database:5432/postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - ROLE_URL=http://rolesystem:8084
+      - ROLE_USERNAME=system
+      - AUDIT_URL=http://auditsystem:8086
+    deploy:
+      labels:
+        - "traefik.frontend.rule=PathPrefix:/api/activities"
+        - "traefik.port=8087"
+    secrets:
+      - system_password
+      - signing_key
 
   frontend:
-    image: frontend
-    container_name: frontend
-    labels:
-      - "traefik.frontend.rule=PathPrefix:/"
+    image: sdugroup11/frontend
+    deploy:
+      labels:
+        - "traefik.frontend.rule=PathPrefix:/"
+        - "traefik.port=80"
 
   traefik:
     image: traefik
-    container_name: traefik
+    command: --debug
     ports:
       - 8080:8080
       - 8081:80
     volumes:
       - ./dockertraefik.toml:/etc/traefik/traefik.toml
       - /var/run/docker.sock:/var/run/docker.sock
+#    deploy:
+#      labels:
+#        - "traefik.traefik.frontend.rule=PathPrefixString=/traefik"
+#        - "traefik.traefik.port=8080"
+
+
+secrets:
+  system_password:
+    external: true
+  signing_key:
+    external: true
+
+volumes:
+  db-data:

@@ -3,4 +3,4 @@ address = ':8080'
 
 [docker]
 watch = true
-
+swarmmode = true
